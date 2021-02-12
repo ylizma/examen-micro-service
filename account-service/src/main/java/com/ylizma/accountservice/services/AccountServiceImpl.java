@@ -4,6 +4,7 @@ import com.ylizma.accountservice.models.*;
 import com.ylizma.accountservice.openfeign.CustomerRestClient;
 import com.ylizma.accountservice.repositories.AccountRepository;
 import com.ylizma.accountservice.repositories.OperationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,8 @@ public class AccountServiceImpl implements AccountService {
     private CustomerRestClient customerRestClient;
     private final AccountRepository accountRepository;
     private final OperationRepository operationRepository;
+    @Autowired
+    private OperationProducer operationProducer;
 
     public AccountServiceImpl(CustomerRestClient customerRestClient, AccountRepository accountRepository, OperationRepository operationRepository) {
         this.customerRestClient = customerRestClient;
@@ -117,10 +120,12 @@ public class AccountServiceImpl implements AccountService {
                 // Create transaction for FROM Account
                 Operation fromTransaction = new Operation(null, fromAccountEntity, new Date(), OperationType.VIREMENT, operationDetails.getTransferAmount());
                 operationRepository.save(fromTransaction);
+                operationProducer.operationSupplier(fromTransaction);
 
                 // Create transaction for TO Account
                 Operation toTransaction = new Operation(null, toAccountEntity, new Date(), OperationType.VIREMENT, operationDetails.getTransferAmount());
                 operationRepository.save(toTransaction);
+                operationProducer.operationSupplier(toTransaction);
             }
             return ResponseEntity.status(HttpStatus.OK).body("Success: Amount transferred for account Number "
                     + operationDetails.getToAccountNumber());

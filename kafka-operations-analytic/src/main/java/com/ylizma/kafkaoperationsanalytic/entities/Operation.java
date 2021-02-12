@@ -1,4 +1,4 @@
-package com.ylizma.accountservice.models;
+package com.ylizma.kafkaoperationsanalytic.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -6,11 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 
-@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,19 +16,14 @@ import java.util.Date;
 @Component
 public class Operation {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne
-    private Account account;
+    private Long account;
 
-    @Temporal(TemporalType.TIME)
     private Date opDateTime;
 
     //operation Type
-    @Enumerated(EnumType.STRING)
-    private OperationType opType;
+    private String opType;
 
     //operation Amount
     private BigDecimal opAmount;
